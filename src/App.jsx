@@ -14,7 +14,7 @@ function useFotos() {
   useEffect(() => {
     const controller = new AbortController();
 
-    fetch("/images/galeria.json", { signal: controller.signal })
+    fetch("/images/galeria.json", { signal: controller.signal, cache: "no-store" })
       .then((response) => {
         if (!response.ok) throw new Error("No se encontró la galería.");
         return response.json();
@@ -82,8 +82,11 @@ function Header() {
 }
 
 function Intro({ fotos }) {
-  const principal = fotos[0]?.src || "/images/marmota-portada.jpg";
-  const secundaria = fotos[1]?.src || "/images/marmota-2.jpg";
+  // La foto elegida para la portada tiene prioridad sobre el orden automático del álbum.
+  const elegida = fotos.find((foto) => foto.src === "/images/hero/marmota-principal.jpg");
+  const principal = elegida?.src || fotos[0]?.src || "/images/marmota-portada.jpg";
+  const secundaria =
+    fotos.find((foto) => foto.src !== principal)?.src || "/images/marmota-2.jpg";
 
   return (
     <section className="intro" id="inicio">
