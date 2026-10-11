@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import "./App.css";
 import Comentarios from "./components/Comentarios.jsx";
 
@@ -39,31 +39,43 @@ function useFotos() {
   return fotos;
 }
 
-function Header() {
-  const [opened, setOpened] = useState(false);
+function useScrollReveal(dependencies) {
+  useLayoutEffect(() => {
+    const elements = document.querySelectorAll("[data-reveal]");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      elements.forEach((element) => element.classList.add("is-revealed"));
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.09, rootMargin: "0px 0px -35px 0px" },
+    );
+
+    for (const element of elements) {
+      element.classList.add("will-reveal");
+      if (!element.classList.contains("is-revealed")) observer.observe(element);
+    }
+    return () => observer.disconnect();
+  }, dependencies);
+}
+
+function Header() {
   return (
     <header className="site-header">
       <div className="container header-inner">
-        <a href="#inicio" className="site-logo" onClick={() => setOpened(false)}>
+        <a href="#inicio" className="site-logo" aria-label="Marmota, volver al inicio">
           <span className="logo-dot" aria-hidden="true" />
           marmota
         </a>
-        <button
-          type="button"
-          className="mobile-menu"
-          aria-label={opened ? "Cerrar menú" : "Abrir menú"}
-          aria-controls="site-navigation"
-          aria-expanded={opened}
-          onClick={() => setOpened((current) => !current)}
-        >
-          {opened ? "Cerrar" : "Menú"} <span aria-hidden="true">{opened ? "×" : "☰"}</span>
-        </button>
-        <nav id="site-navigation" className={opened ? "site-nav is-open" : "site-nav"} aria-label="Principal">
-          <a href="#galeria" onClick={() => setOpened(false)}>Fotos</a>
-          <a href="#sobre-ella" onClick={() => setOpened(false)}>Sobre ella</a>
-          <a href="#comentarios" onClick={() => setOpened(false)}>Mensajes</a>
-        </nav>
       </div>
     </header>
   );
@@ -76,20 +88,12 @@ function Intro({ fotos }) {
   return (
     <section className="intro" id="inicio">
       <div className="container">
-        <div className="intro-topline">
-          <span>El álbum de Marmota</span>
-          <span>Yorkshire · Chile</span>
-        </div>
         <div className="intro-layout">
           <div className="intro-copy">
-            <span className="intro-overline">Hola, soy</span>
             <h1>Marmota<span>.</span></h1>
-            <p>
-              Una Yorkshire de cinco años, con mucho carácter y unos dientes
-              difíciles de olvidar. Estas son algunas de sus fotos.
-            </p>
+            <p>Cinco años, muchas fotos.</p>
             <a className="intro-link" href="#galeria">
-              Ver el álbum <span aria-hidden="true">↗</span>
+              Ver fotos <span aria-hidden="true">↗</span>
             </a>
           </div>
           <div className="intro-photos">
@@ -99,7 +103,6 @@ function Intro({ fotos }) {
             <figure className="intro-image-small">
               <img src={secundaria} alt="Otra foto de Marmota" />
             </figure>
-            <span className="photo-stamp">M / 05</span>
           </div>
         </div>
       </div>
@@ -167,6 +170,9 @@ function Galeria({ fotos }) {
   const filtradas = category === "Todas" ? fotos : fotos.filter((foto) => foto.category === category);
   const visibles = filtradas.slice(0, visibleCount);
 
+  // Revelar fotos al entrar en pantalla y al añadir más imágenes.
+  useScrollReveal([category, visibleCount, fotos.length]);
+
   function selectCategory(next) {
     setCategory(next);
     setVisibleCount(24);
@@ -175,12 +181,8 @@ function Galeria({ fotos }) {
   return (
     <section id="galeria" className="album-section">
       <div className="container">
-        <div className="album-heading">
-          <div>
-            <span className="small-eyebrow">Fotografías</span>
-            <h2>Su álbum.</h2>
-          </div>
-          <p>Fotos de Marmota, sin mucho más que contar.</p>
+        <div className="album-heading" data-reveal="soft">
+          <h2>El álbum.</h2>
         </div>
 
         {categories.length > 2 && (
@@ -210,6 +212,8 @@ function Galeria({ fotos }) {
                 <button
                   type="button"
                   className="photo-tile"
+                  data-reveal="photo"
+                  style={{ "--reveal-delay": `${(index % 3) * 85}ms` }}
                   key={foto.src}
                   onClick={() => setActiveIndex(index)}
                   aria-label={`Abrir foto ${index + 1} de ${filtradas.length}`}
@@ -246,16 +250,13 @@ function Galeria({ fotos }) {
 function SobreElla() {
   return (
     <section className="about-section" id="sobre-ella">
-      <div className="container about-layout">
+      <div className="container about-layout" data-reveal="soft">
         <div className="about-label">Un poco sobre ella</div>
         <div className="about-text">
-          <h2>La dueña de estas fotos.</h2>
+          <h2>Así es Marmota.</h2>
           <p>
-            Marmota tiene cinco años. Le gusta estar cerca de la familia,
-            que le hagan cariño y enterarse de todo lo que pasa en casa.
-            También tiene unos dientes que llaman bastante la atención.
+            Cariñosa, atenta a todo y con unos dientes inconfundibles.
           </p>
-          <p>Esta página es simplemente un lugar para reunir sus fotos y recuerdos.</p>
         </div>
         <div className="about-facts">
           <div><span>Edad</span><strong>5 años</strong></div>
