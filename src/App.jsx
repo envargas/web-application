@@ -2,11 +2,19 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import "./App.css";
 import Comentarios from "./components/Comentarios.jsx";
 
-const fotosIniciales = Array.from({ length: 6 }, (_, index) => ({
-  src: `/images/marmota-${index + 1}.jpg`,
-  alt: "Foto de Marmota",
-  category: "Recuerdos",
-}));
+// Dos fotos distintas, visibles mientras llega el índice actualizado desde Vercel.
+const fotosIniciales = [
+  {
+    src: "/images/hero/marmota-principal.jpg",
+    alt: "Marmota celebrando",
+    category: "Portadas",
+  },
+  {
+    src: "/images/galeria/WhatsApp%20Image%202026-10-10%20at%2010.15.17%20PM.jpeg",
+    alt: "Marmota descansando",
+    category: "Galería",
+  },
+];
 
 function useFotos() {
   const [fotos, setFotos] = useState(fotosIniciales);
@@ -86,7 +94,9 @@ function Intro({ fotos }) {
   const elegida = fotos.find((foto) => foto.src === "/images/hero/marmota-principal.jpg");
   const principal = elegida?.src || fotos[0]?.src || "/images/marmota-portada.jpg";
   const secundaria =
-    fotos.find((foto) => foto.src !== principal)?.src || "/images/marmota-2.jpg";
+    fotos.find((foto) => foto.category === "Galería" && foto.src !== principal)?.src ||
+    fotos.find((foto) => foto.src !== principal)?.src ||
+    "/images/galeria/WhatsApp%20Image%202026-10-10%20at%2010.15.17%20PM.jpeg";
 
   return (
     <section className="intro" id="inicio">
@@ -186,6 +196,7 @@ function Galeria({ fotos }) {
       <div className="container">
         <div className="album-heading" data-reveal="soft">
           <h2>El álbum.</h2>
+          <p>{fotos.length} fotos</p>
         </div>
 
         {categories.length > 2 && (

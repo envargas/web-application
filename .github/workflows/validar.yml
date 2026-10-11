@@ -21,3 +21,17 @@ jobs:
         run: npm run lint
       - name: Compilar
         run: npm run build
+      - name: Confirmar índice e imágenes en dist
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, existsSync } from "node:fs";
+          const items = JSON.parse(readFileSync("dist/images/galeria.json", "utf8"));
+          if (!Array.isArray(items) || items.length < 15) {
+            throw new Error("No se encontraron suficientes fotografías en el paquete de producción");
+          }
+          const missing = items.filter((item) => !existsSync("dist" + decodeURIComponent(item.src)));
+          if (missing.length) {
+            throw new Error("Fotografías inexistentes en dist: " + missing.map((x) => x.src).join(", "));
+          }
+          console.log("Galería de producción verificada:", items.length, "fotografías únicas.");
+          NODE
