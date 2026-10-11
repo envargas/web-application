@@ -13,6 +13,8 @@ const galleryFolders = [
 ];
 
 function marmotaGaleria() {
+  let pending = null;
+
   return {
     name: "marmota-galeria",
     configResolved() {
@@ -20,17 +22,25 @@ function marmotaGaleria() {
     },
     configureServer(server) {
       server.watcher.add(galleryFolders);
-      server.watcher.on("add", (file) => {
-        if (/\\public\\images\\|\/public\/images\//.test(file) && /\.(jpe?g|png|webp|avif|gif)$/i.test(file)) {
+
+      const updatePhotos = (file) => {
+        const normalized = file.replaceAll("\\", "/");
+        if (!normalized.includes("/public/images/")) return;
+        if (!/\.(jpe?g|png|webp|avif|gif)$/i.test(normalized)) return;
+
+        // Si copias 100 fotos de golpe, crear el índice una sola vez.
+        if (pending) clearTimeout(pending);
+        pending = setTimeout(() => {
           generarGaleria();
           server.ws.send({ type: "full-reload" });
-        }
-      });
-      server.watcher.on("unlink", (file) => {
-        if (/\\public\\images\\|\/public\/images\//.test(file) && /\.(jpe?g|png|webp|avif|gif)$/i.test(file)) {
-          generarGaleria();
-          server.ws.send({ type: "full-reload" });
-        }
+          pending = null;
+        }, 350);
+      };
+
+      server.watcher.on("add", updatePhotos);
+      server.watcher.on("unlink", updatePhotos);
+      server.httpServer?.on("close", () => {
+        if (pending) clearTimeout(pending);
       });
     },
   };
