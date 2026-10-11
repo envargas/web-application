@@ -1,4 +1,5 @@
-import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -9,11 +10,11 @@ const extensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif"]);
 
 const folders = [
   ["galeria", "Galería"],
+  ["hero", "Portadas"],
   ["familia", "Familia"],
   ["amigos", "Amigos"],
   ["viajes", "Paseos"],
   ["recuerdos", "Recuerdos"],
-  ["hero", "Portadas"],
 ];
 
 function scan(dir, collection, relative = []) {
@@ -31,6 +32,7 @@ function scan(dir, collection, relative = []) {
         src: "/images/" + collection.folder + segments.map(encodeURIComponent).join("/"),
         category: collection.label,
         date: statSync(file).mtimeMs,
+        file,
         alt: "Foto de Marmota",
       });
     }
@@ -55,15 +57,35 @@ export function generarGaleria() {
         src: "/images/" + encodeURIComponent(item.name),
         category: "Recuerdos",
         date: statSync(path.join(imageRoot, item.name)).mtimeMs,
+        file: path.join(imageRoot, item.name),
         alt: "Foto de Marmota",
       });
     }
   }
 
-  photos.sort((a, b) => b.date - a.date || a.src.localeCompare(b.src));
-  const manifest = photos.map(({ src, category, alt }) => ({ src, category, alt }));
+  // Priorizar las fotos reales de galeria/ y la portada elegida.
+  // No mostrar copias idénticas aunque estén guardadas con nombres diferentes.
+  const hashes = new Set();
+  const uniquePhotos = [];
+  for (const photo of photos) {
+    const digest = createHash("sha256").update(readFileSync(photo.file)).digest("hex");
+    if (hashes.has(digest)) continue;
+    hashes.add(digest);
+    uniquePhotos.push(photo);
+  }
+
+  const folderPriority = new Map(folders.map(([name], i) => [name, i]));
+  uniquePhotos.sort((a, b) => {
+    const groupA = a.src.split("/")[2];
+    const groupB = b.src.split("/")[2];
+    const rankA = folderPriority.get(groupA) ?? folders.length;
+    const rankB = folderPriority.get(groupB) ?? folders.length;
+    return rankA - rankB || b.date - a.date || a.src.localeCompare(b.src);
+  });
+
+  const manifest = uniquePhotos.map(({ src, category, alt }) => ({ src, category, alt }));
   writeFileSync(output, JSON.stringify(manifest, null, 2) + "\n", "utf8");
-  console.log(`[Marmota] Galería actualizada: ${manifest.length} fotos encontradas.`);
+  console.log(`[Marmota] Galería actualizada: ${manifest.length} fotos únicas de ${photos.length} archivos.`);
   return manifest.length;
 }
 
