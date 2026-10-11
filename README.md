@@ -1,39 +1,64 @@
 # Marmota
 
-Sitio personal sobre Marmota, desarrollado en React y Vite.
+Álbum de fotos de Marmota (React + Vite). Diseño de galería con filtros por categorías, fotografías ampliables y un libro de visitas.
 
-## Ejecutar en local
+## Ejecutar
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abre la dirección que indique Vite (normalmente `http://localhost:5173`).
+Abre la dirección indicada por Vite (habitualmente `http://localhost:5173/`).
 
-## Libro de visitas
+## Añadir 10, 50 o 200 fotos de golpe
 
-El formulario pide tres datos: nombre, nombre/descripción de la mascota y mensaje para Marmota.
+**No necesitas tocar el código ni registrar cada imagen a mano.**
 
-**Sin configuración adicional:** funciona en **modo de prueba local**. Los mensajes se guardan en `localStorage` y solo aparecen en ese navegador. Se indica claramente en la interfaz; **no son comentarios públicos**.
+1. Copia o arrastra fotos `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif` o `.gif` a **`public/images/galeria/`**.
+2. Si prefieres organizarlas, usa estas carpetas: `public/images/familia/`, `amigos/`, `viajes/`, `recuerdos/` y `hero/`. El filtro de la galería se crea solo.
+3. Al iniciar Vite se ejecuta `scripts/generar-galeria.mjs` automáticamente y genera **`public/images/galeria.json`**. Al añadir o eliminar una foto, Vite también actualiza el índice.
+4. Para subirlas al repositorio, en Windows haz doble clic en **`SUBIR_FOTOS_MARMOTA.bat`** y confirma el listado. O usa los comandos:
 
-**Para activar los comentarios compartidos** (Supabase):
+   ```bash
+   git add public/images/galeria public/images/familia public/images/amigos public/images/viajes public/images/recuerdos public/images/hero
+   git commit -m "Agregar nuevas fotos"
+   git push origin feature/marmota-estilo-comentarios
+   ```
 
-1. Crea un proyecto de Supabase y abre **SQL Editor**.
-2. Ejecuta el contenido de `supabase/comentarios.sql`.
-3. Copia `.env.example` a `.env.local`.
-4. Rellena `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` con los valores de **Project Settings > API** de Supabase. También se acepta una clave pública `anon` antigua en `VITE_SUPABASE_ANON_KEY`.
-5. Reinicia `npm run dev`. Ahora los mensajes se obtienen y guardan mediante la API de Supabase.
-6. Para el sitio en Vercel, configura esas **mismas variables públicas** en **Project Settings > Environment Variables** y vuelve a desplegar.
+5. Vercel vuelve a desplegar las fotografías al recibir el commit, según la configuración de la rama.
 
-**Seguridad y moderación:** el SQL habilita RLS. Los visitantes solo pueden ver mensajes visibles e insertar otros; no pueden modificarlos ni eliminarlos. Para ocultar un mensaje, cambia el valor `visible` desde Supabase. El formulario incluye validación y un campo trampa para bots sencillos, pero **antes de anunciarlo como libro de visitas público conviene habilitar CAPTCHA y límites de envío** para reducir spam. Nunca uses `service_role` ni claves `sb_secret_...` en variables `VITE_`: quedan expuestas al navegador.
+Las imágenes existentes `public/images/marmota-*.jpg` se integran automáticamente. El índice se **genera en cada compilación**, por lo que no es necesario versionarlo.
 
-## Notas de mantenimiento
+**Importante:** evita fotos originales enormes: idealmente conviértelas a JPG o WebP (1600–2000 px de lado mayor y calidad 75–85). No subas imágenes privadas a un repositorio público. GitHub rechaza archivos superiores a 100 MB de forma individual. HEIC no se admite directamente; convierte las fotos HEIC a JPG/WebP.
 
-- `src/App.jsx`: contenido y secciones.
-- `src/App.css`: estilos generales.
-- `src/components/Comentarios.jsx`: formulario, lectura de mensajes y vista previa.
-- `src/components/Comentarios.css`: estilos del libro de visitas.
-- `supabase/comentarios.sql`: tabla y políticas RLS.
+## Libro de visitas sin base de datos
 
-Los archivos personales (fotos adicionales y datos locales) que todavía no estén subidos al repositorio deben respaldarse antes de reemplazar ramas o trabajar en otra máquina.
+- **En desarrollo** (`npm run dev`) funciona en vista previa: los mensajes se guardan en el navegador (`localStorage`) y solo los ve quien los creó.
+- **En Vercel:** `api/comments.js` registra cada mensaje como un objeto JSON en un comentario del issue **[#2](https://github.com/envargas/web-application/issues/2)**. Se reutiliza GitHub como almacenamiento persistente, **sin una base de datos y sin escribir archivos en el sistema de Vercel**.
+- Los datos del comentario son públicos: nombre, mascota, mensaje y fecha. El usuario no necesita cuenta GitHub.
+- GitHub Issue #2 permite eliminar o moderar comentarios manualmente desde GitHub; no borrar el issue.
+
+### Activación en Vercel
+
+1. En GitHub crea un **fine-grained personal access token**, limitado únicamente al repositorio `envargas/web-application`, con permiso **Issues: Read and write** y Metadata: Read.
+2. En Vercel > Project > **Settings > Environment Variables** añade `GITHUB_COMMENTS_TOKEN` con el token. **No** antepongas `VITE_` al nombre.
+3. Vuelve a desplegar tu proyecto. El servidor podrá publicar nuevos comentarios. Si falta la variable, la API devolverá 503 en los envíos.
+4. Para evitar spam, activa protección antibots y límites de solicitudes en el endpoint `/api/comments` desde el firewall de Vercel antes de compartir públicamente el enlace.
+
+No subas el token a GitHub ni lo pongas en código que ejecuta el navegador. El repositorio es público; los mensajes también son públicos por diseño.
+
+**Límite actual de lectura:** se consultan hasta 300 respuestas del issue y se muestran las 60 más recientes. El listado no representa un sistema de moderación automática.
+
+## Estructura
+
+- `src/App.jsx`: portada, galería con filtros y vista ampliada.
+- `src/App.css`: diseño general.
+- `src/components/Comentarios.jsx`: formulario y listado.
+- `api/comments.js`: función serverless de Vercel para los mensajes.
+- `scripts/generar-galeria.mjs`: índice automático.
+- `vite.config.js`: generación en desarrollo y compilación.
+
+## Rama de trabajo
+
+La funcionalidad se prueba en `feature/marmota-estilo-comentarios`. Mantén a salvo cualquier cambio local no subido (incluidos `package.json`, `src/data/` y fotos personales) antes de mezclar ramas.
