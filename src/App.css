@@ -1851,3 +1851,273 @@
     display: none;
   }
 }
+
+/* Ajustes editoriales: tipografía con carácter y menos elementos decorativos. */
+:root {
+  --background: #faf7f2;
+  --surface-soft: #f2ece3;
+  --surface-deep: #e7dbcd;
+  --text: #2a2723;
+  --text-soft: #655e56;
+  --accent: #956b4e;
+  --accent-dark: #614631;
+  --dark: #25231f;
+  --radius: 14px;
+  --radius-lg: 18px;
+  --shadow: 0 15px 40px rgba(57, 47, 37, 0.12);
+}
+
+body,
+button,
+input,
+textarea,
+a {
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-weight: 400;
+}
+
+.logo,
+.footer-brand,
+.hero-title,
+.story-content h2,
+.section-heading h2,
+.final-content h2,
+.info-card h3 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.logo,
+.footer-brand {
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+.navbar {
+  background: rgba(250, 247, 242, 0.96);
+  backdrop-filter: blur(10px);
+}
+
+.navbar nav a,
+.eyebrow,
+.section-label,
+.image-index,
+.image-caption {
+  font-weight: 600;
+  letter-spacing: 0.045em;
+}
+
+.nav-pill,
+.primary-button,
+.secondary-button,
+.final-button {
+  border-radius: 8px;
+  box-shadow: none;
+  font-weight: 600;
+}
+
+.primary-button::before,
+.final-button::before,
+.story-image-shine,
+.pointer-glow,
+.hero-orb,
+.hero-lines,
+.personality-orb,
+.final-rings,
+.personality-card::before,
+.section-number {
+  display: none;
+}
+
+.hero {
+  min-height: auto;
+  padding: 88px 0 105px;
+}
+
+.hero-title {
+  font-size: clamp(4rem, 7vw, 6.5rem);
+  font-weight: 500;
+  line-height: 1.03;
+  letter-spacing: -0.055em;
+}
+
+.hero-title .title-line-one {
+  padding-bottom: 0;
+}
+
+.hero-copy {
+  margin-top: 27px;
+  font-size: 1.12rem;
+  line-height: 1.64;
+}
+
+.hero-meta {
+  gap: 18px;
+  margin-top: 36px;
+  padding-top: 22px;
+}
+
+.meta-item strong {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.hero-visual {
+  min-height: 580px;
+}
+
+.hero-image-card {
+  width: min(100%, 490px);
+  box-shadow: 0 20px 56px rgba(49, 37, 27, 0.16);
+}
+
+.hero-image-card::before {
+  background: #e9dfd1;
+}
+
+.hero-image-mask {
+  height: 515px;
+}
+
+.section {
+  padding: 110px 0;
+}
+
+.story-image-wrapper {
+  border-radius: 14px;
+}
+
+.story-badge {
+  border-radius: 7px;
+  box-shadow: 0 10px 30px rgba(76, 54, 36, 0.16);
+  animation: none;
+}
+
+.story-note {
+  display: none;
+}
+
+.story-content h2,
+.section-heading h2,
+.final-content h2 {
+  font-size: clamp(2.7rem, 5vw, 4.6rem);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.story-content .lead-text {
+  font-size: 1.13rem;
+  font-weight: 400;
+}
+
+.story-list-item:hover {
+  padding-left: 0;
+}
+
+.personality-section {
+  background: #282620;
+}
+
+.personality-card {
+  min-height: 320px;
+  border-radius: 12px;
+  backdrop-filter: none;
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.personality-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(214, 170, 132, 0.24);
+  box-shadow: none;
+  transform: none;
+}
+
+.card-tag {
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+.info-card h3 {
+  max-width: 320px;
+  font-size: clamp(1.7rem, 2.3vw, 2.15rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+.card-arrow {
+  display: none;
+}
+
+.gallery-item {
+  border-radius: 10px;
+}
+
+.gallery-caption strong {
+  font-weight: 600;
+}
+
+.final-section {
+  padding: 110px 0;
+  background: #6b4d39;
+}
+
+.final-section::before {
+  display: none;
+}
+
+.final-content h2 {
+  font-weight: 500;
+}
+
+[data-reveal] {
+  transition-duration: 450ms;
+}
+
+[data-reveal="up"] { transform: translateY(20px); }
+[data-reveal="left"] { transform: translateX(-20px); }
+[data-reveal="right"] { transform: translateX(20px); }
+[data-reveal="scale"] { transform: scale(0.98); }
+
+@media (max-width: 900px) {
+  .hero {
+    padding: 65px 0 90px;
+  }
+
+  .hero-visual {
+    min-height: 570px;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding: 48px 0 80px;
+  }
+
+  .hero-title {
+    font-size: clamp(3.8rem, 16vw, 5.8rem);
+  }
+
+  .hero-visual {
+    min-height: 520px;
+  }
+
+  .hero-image-mask {
+    height: min(115vw, 490px);
+  }
+
+  .section {
+    padding: 82px 0;
+  }
+
+  .story-content h2,
+  .section-heading h2,
+  .final-content h2 {
+    font-size: clamp(2.65rem, 11vw, 4rem);
+  }
+
+  .final-section {
+    padding: 85px 0;
+  }
+}
