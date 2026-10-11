@@ -15,19 +15,16 @@
 }
 
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 90;
-  background: rgba(250, 247, 241, 0.97);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(15px);
+  position: relative;
+  z-index: 10;
+  background: var(--background);
 }
 
 .header-inner {
   display: flex;
-  min-height: 72px;
+  min-height: 64px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 24px;
 }
 
@@ -49,51 +46,23 @@
   border-radius: 50%;
 }
 
-.site-nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(20px, 4vw, 44px);
-}
-
-.site-nav a {
-  color: var(--text-soft);
-  font-size: 0.96rem;
-  font-weight: 500;
-  transition: color 150ms ease;
-}
-
-.site-nav a:hover { color: var(--text); }
-
-.mobile-menu { display: none; }
 
 .intro {
-  padding: 28px 0 92px;
+  padding: 14px 0 82px;
   overflow: hidden;
 }
 
-.intro-topline {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 13px 0;
-  color: var(--text-soft);
-  border-bottom: 1px solid var(--border);
-  font-size: 0.83rem;
-  letter-spacing: 0.01em;
-}
 
 .intro-layout {
   display: grid;
   grid-template-columns: minmax(340px, 0.9fr) minmax(0, 1.1fr);
   align-items: center;
   gap: clamp(40px, 6vw, 96px);
-  padding-top: 56px;
+  padding-top: 28px;
 }
 
 .intro-copy { padding: 28px 0 38px; }
 
-.intro-overline,
-.small-eyebrow,
 .about-label {
   color: var(--accent-dark);
   font-size: 0.85rem;
@@ -119,7 +88,7 @@
 
 .intro-copy p {
   max-width: 430px;
-  margin: 31px 0 34px;
+  margin: 24px 0 30px;
   color: var(--text-soft);
   font-size: 1.17rem;
   line-height: 1.72;
@@ -183,18 +152,9 @@
   transform: rotate(4deg);
 }
 
-.photo-stamp {
-  position: absolute;
-  top: 0;
-  right: 2px;
-  color: var(--accent-dark);
-  font-family: "Fraunces", Georgia, serif;
-  font-size: 1.2rem;
-  font-style: italic;
-}
 
 .album-section {
-  padding: 95px 0 112px;
+  padding: 86px 0 108px;
   background: #f0e9df;
 }
 
@@ -482,31 +442,7 @@
 
 @media (max-width: 750px) {
   .container { width: min(100% - 32px, 1240px); }
-  .header-inner { min-height: 64px; }
-  .mobile-menu {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 0;
-    color: var(--text);
-    background: transparent;
-    border: 0;
-    cursor: pointer;
-    font: inherit;
-  }
-  .site-nav {
-    position: absolute;
-    top: 64px;
-    right: 0;
-    left: 0;
-    display: none;
-    gap: 0;
-    padding: 10px 16px 18px;
-    background: var(--background);
-    border-bottom: 1px solid var(--border);
-  }
-  .site-nav.is-open { display: grid; }
-  .site-nav a { padding: 13px 4px; }
+
 
   .intro { padding: 12px 0 60px; }
   .intro-layout { grid-template-columns: 1fr; gap: 8px; padding-top: 28px; }
@@ -544,6 +480,88 @@
   *, *::before, *::after {
     scroll-behavior: auto !important;
     animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* Entrada tranquila en portada: se mantiene el diseño aunque JS esté desactivado. */
+.intro-copy h1 {
+  animation: coverTextIn 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-copy p {
+  animation: coverTextIn 760ms 130ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-link {
+  animation: coverTextIn 760ms 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-image-main {
+  animation: coverPhotoIn 950ms 90ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-image-small {
+  animation: coverSmallPhotoIn 950ms 270ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes coverTextIn {
+  from { opacity: 0; transform: translateY(19px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes coverPhotoIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.975); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes coverSmallPhotoIn {
+  from { opacity: 0; transform: translateY(22px) rotate(1deg) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) rotate(4deg) scale(1); }
+}
+
+/* Los elementos solo se ocultan cuando el observador ya está activo.
+   Cada fotografía aparece al entrar en el viewport; no se reanima al subir. */
+[data-reveal].will-reveal {
+  transition:
+    opacity 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 950ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal="photo"].will-reveal:not(.is-revealed) {
+  opacity: 0;
+  transform: translateY(36px) scale(0.975);
+  clip-path: inset(0 0 10% 0);
+}
+
+[data-reveal="soft"].will-reveal:not(.is-revealed) {
+  opacity: 0;
+  transform: translateY(23px);
+}
+
+[data-reveal].will-reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0);
+}
+
+/* Respeta la preferencia de movimiento reducido del dispositivo. */
+@media (prefers-reduced-motion: reduce) {
+  .intro-copy h1,
+  .intro-copy p,
+  .intro-link,
+  .intro-image-main,
+  .intro-image-small {
+    animation: none !important;
+  }
+  [data-reveal].will-reveal,
+  [data-reveal].will-reveal:not(.is-revealed) {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
     transition: none !important;
   }
 }
