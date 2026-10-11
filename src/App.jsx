@@ -1,24 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
+import Comentarios from "./components/Comentarios.jsx";
 
 const curiosidades = [
   {
     number: "01",
-    title: "Ternura sin medida",
-    text: "Le encanta estar cerca, pedir cariño y transformar cualquier momento normal en uno especial.",
-    tag: "Modo regalona",
+    title: "Siempre cerca",
+    text: "Le gusta que le hagan cariño y estar donde está el resto de la familia.",
+    tag: "Cariñosa",
   },
   {
     number: "02",
-    title: "Pequeña guardiana",
-    text: "Tiene tamaño Yorkshire, pero vigila la casa con la seguridad de quien cree medir dos metros.",
-    tag: "Valentía XL",
+    title: "No se le escapa nada",
+    text: "Está atenta a los ruidos y siempre sabe cuándo alguien llega.",
+    tag: "Atenta",
   },
   {
     number: "03",
-    title: "Dientes legendarios",
-    text: "Su cara dulce esconde una sonrisa inolvidable: grandes dientes que ya son parte de su sello personal.",
-    tag: "Sonrisa única",
+    title: "Sus famosos dientes",
+    text: "Su sonrisa es una de las cosas que más llaman la atención cuando la conoces.",
+    tag: "Inconfundible",
   },
 ];
 
@@ -26,32 +27,32 @@ const fotos = [
   {
     src: "/images/marmota-1.jpg",
     alt: "Marmota disfrutando uno de sus momentos favoritos",
-    caption: "Su mejor ángulo",
+    caption: "Una de mis favoritas",
   },
   {
     src: "/images/marmota-2.jpg",
     alt: "Marmota mirando atentamente a la cámara",
-    caption: "Mirada de jefa",
+    caption: "Muy atenta",
   },
   {
     src: "/images/marmota-3.jpg",
     alt: "Una fotografía especial de Marmota",
-    caption: "Día de aventura",
+    caption: "De paseo",
   },
   {
     src: "/images/marmota-4.jpg",
     alt: "Marmota descansando tranquilamente",
-    caption: "Pausa merecida",
+    caption: "Hora de descansar",
   },
   {
     src: "/images/marmota-5.jpg",
     alt: "Marmota posando con mucha personalidad",
-    caption: "Actitud Yorkshire",
+    caption: "Posando",
   },
   {
     src: "/images/marmota-6.jpg",
     alt: "Otro momento inolvidable de Marmota",
-    caption: "Momento Marmota",
+    caption: "Otra de Marmota",
   },
 ];
 
@@ -199,8 +200,8 @@ function Navbar() {
         >
           <a href="#historia" onClick={closeMenu}>Historia</a>
           <a href="#personalidad" onClick={closeMenu}>Personalidad</a>
-          <a href="#galeria" onClick={closeMenu}>Galería</a>
-          <a className="nav-pill" href="#final" onClick={closeMenu}>Conócela</a>
+          <a href="#galeria" onClick={closeMenu}>Fotos</a>
+          <a className="nav-pill" href="#comentarios" onClick={closeMenu}>Comentarios</a>
         </nav>
       </div>
     </header>
@@ -241,7 +242,7 @@ function Hero() {
         <div className="hero-content">
           <div className="eyebrow hero-enter hero-enter-1">
             <span className="eyebrow-dot" />
-            Una Yorkshire muy especial
+            Una Yorkshire llamada Marmota
           </div>
 
           <h1 className="hero-title" aria-label="Hola, soy Marmota">
@@ -250,35 +251,35 @@ function Hero() {
           </h1>
 
           <p className="hero-copy hero-enter hero-enter-4">
-            Cinco años de ternura, carácter y una sonrisa imposible de olvidar.
-            Es pequeña por fuera, enorme de corazón y absolutamente dueña de la casa.
+            Tiene cinco años, mucho carácter y unos dientes que no pasan desapercibidos.
+            Aquí juntamos algunas fotos y recuerdos de ella.
           </p>
 
           <div className="hero-actions hero-enter hero-enter-5">
-            <a className="primary-button" href="#historia">
-              <span>Conoce su historia</span>
+            <a className="primary-button" href="#galeria">
+              <span>Ver sus fotos</span>
               <i aria-hidden="true">↘</i>
             </a>
 
-            <a className="secondary-button" href="#galeria">
-              Ver fotografías
+            <a className="secondary-button" href="#comentarios">
+              Dejarle un mensaje
             </a>
           </div>
 
           <div className="hero-meta hero-enter hero-enter-6">
             <div className="meta-item">
               <strong>5</strong>
-              <span>Años de aventuras</span>
+              <span>años</span>
             </div>
             <div className="meta-divider" aria-hidden="true" />
             <div className="meta-item">
-              <strong>100%</strong>
-              <span>Personalidad</span>
+              <strong>Yorkshire</strong>
+              <span>su raza</span>
             </div>
             <div className="meta-divider" aria-hidden="true" />
             <div className="meta-item">
-              <strong>∞</strong>
-              <span>Ternura</span>
+              <strong>Chile</strong>
+              <span>su hogar</span>
             </div>
           </div>
         </div>
@@ -302,24 +303,6 @@ function Hero() {
             <span className="image-caption">Yorkshire · Chile</span>
           </div>
 
-          <div className="floating-card floating-card-top">
-            <span className="floating-icon">M</span>
-            <div>
-              <strong>Pequeña guardiana</strong>
-              <small>Valentía tamaño XL</small>
-            </div>
-          </div>
-
-          <div className="floating-card floating-card-bottom">
-            <span className="floating-icon">5</span>
-            <div>
-              <strong>Cinco años</strong>
-              <small>de historias inolvidables</small>
-            </div>
-          </div>
-
-          <div className="orbit orbit-one" aria-hidden="true" />
-          <div className="orbit orbit-two" aria-hidden="true" />
         </div>
       </div>
 
@@ -327,23 +310,6 @@ function Hero() {
         <span>Descubrir</span>
         <i aria-hidden="true" />
       </a>
-    </section>
-  );
-}
-
-function Marquee() {
-  const items = ["Yorkshire", "Tierna", "Valiente", "Regalona", "Grandes dientes", "Pequeña jefa"];
-  const repeatedItems = [...items, ...items];
-
-  return (
-    <section className="marquee-section" aria-label="Características de Marmota">
-      <div className="marquee-track">
-        {repeatedItems.map((item, index) => (
-          <span key={`${item}-${index}`}>
-            {item}<i aria-hidden="true">✦</i>
-          </span>
-        ))}
-      </div>
     </section>
   );
 }
@@ -367,39 +333,38 @@ function Historia() {
 
           <div className="story-badge">
             <strong>5</strong>
-            <span>años llenando cada rincón de alegría</span>
+            <span>años de vida</span>
           </div>
 
-          <span className="story-note">La protagonista</span>
+          <span className="story-note">Marmota</span>
         </div>
 
         <div className="story-content" data-reveal="right">
           <span className="section-label">Su historia</span>
-          <h2>Una compañera pequeña con una presencia enorme.</h2>
+          <h2>Así es Marmota.</h2>
 
           <p className="lead-text">
-            Marmota llegó para convertir los días comunes en pequeñas historias.
-            Desde entonces, cada paseo, siesta y mirada seria tiene algo que contar.
+            Marmota es una Yorkshire de cinco años. Le gusta estar acompañada
+            y tiene su propia manera de pedir atención.
           </p>
 
           <p>
-            Es cariñosa, observadora y muy segura de sí misma. Su tamaño contrasta
-            con un carácter gigante y con esos dientes que aparecen justo cuando
-            quiere recordarnos que, en realidad, ella dirige la casa.
+            Es cariñosa, está pendiente de lo que pasa a su alrededor y tiene
+            una sonrisa que es difícil confundir con otra.
           </p>
 
           <div className="story-list">
             <div className="story-list-item">
               <span>01</span>
-              <p>Especialista en conseguir atención sin decir una palabra.</p>
+              <p>Le encanta que le hagan cariño.</p>
             </div>
             <div className="story-list-item">
               <span>02</span>
-              <p>Supervisa personalmente cada movimiento de la familia.</p>
+              <p>Está pendiente de cualquier ruido.</p>
             </div>
             <div className="story-list-item">
               <span>03</span>
-              <p>Puede pasar de máxima ternura a guardiana oficial en segundos.</p>
+              <p>Tiene unos dientes difíciles de olvidar.</p>
             </div>
           </div>
         </div>
@@ -416,9 +381,9 @@ function Personalidad() {
       <div className="container">
         <div className="section-heading" data-reveal="up">
           <span className="section-label light-label">Su personalidad</span>
-          <h2>Todo lo que hace que Marmota sea Marmota.</h2>
+          <h2>Tres cosas sobre ella.</h2>
           <p>
-            Ternura, elegancia, carácter y una dosis perfectamente calculada de dramatismo Yorkshire.
+            Un poco de su personalidad, para quienes todavía no la conocen.
           </p>
         </div>
 
@@ -439,25 +404,6 @@ function Personalidad() {
               <span className="card-arrow" aria-hidden="true">↗</span>
             </article>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Quote() {
-  return (
-    <section className="quote-section">
-      <div className="quote-word" aria-hidden="true">MARMOTA</div>
-      <div className="container quote-content" data-reveal="scale">
-        <span className="quote-icon">“</span>
-        <blockquote>
-          Pequeña por fuera, gigante de corazón y con suficientes dientes para
-          recordarnos quién manda en casa.
-        </blockquote>
-        <div className="quote-author">
-          <span />
-          <p>Marmota, probablemente</p>
         </div>
       </div>
     </section>
@@ -525,10 +471,10 @@ function Galeria() {
         <div className="section-heading gallery-heading" data-reveal="up">
           <div>
             <span className="section-label">Galería</span>
-            <h2>Momentos que merecen quedarse.</h2>
+            <h2>Fotos de Marmota.</h2>
           </div>
           <p>
-            Un pequeño archivo visual de miradas, aventuras, poses serias y descansos profesionales.
+            Algunas de nuestras fotos favoritas.
           </p>
         </div>
 
@@ -570,13 +516,13 @@ function FinalSection() {
     <section className="final-section" id="final">
       <div className="final-rings" aria-hidden="true" />
       <div className="container final-content" data-reveal="scale">
-        <span className="section-label">La conclusión oficial</span>
-        <h2>El mundo es un poco mejor con Marmota en él.</h2>
+        <span className="section-label">Un poco de Marmota</span>
+        <h2>Eso es Marmota.</h2>
         <p>
-          Cinco años, miles de recuerdos y una personalidad que no cabe en una sola página.
+          Gracias por pasar a conocerla. Si tienes mascota, puedes dejarle un mensaje.
         </p>
         <a className="final-button" href="#inicio">
-          Volver a verla <span aria-hidden="true">↑</span>
+          Volver al inicio <span aria-hidden="true">↑</span>
         </a>
       </div>
     </section>
@@ -592,7 +538,7 @@ function Footer() {
           <span>Marmota.</span>
         </a>
 
-        <p>Diseñada con cariño para una Yorkshire inolvidable.</p>
+        <p>Una página para guardar sus fotos y recuerdos.</p>
 
         <span>© {new Date().getFullYear()}</span>
       </div>
@@ -609,11 +555,10 @@ function App() {
       <Navbar />
       <main>
         <Hero />
-        <Marquee />
         <Historia />
         <Personalidad />
-        <Quote />
         <Galeria />
+        <Comentarios />
         <FinalSection />
       </main>
       <Footer />
