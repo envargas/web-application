@@ -2,14 +2,8 @@ import { useEffect, useState } from "react";
 import "./Comentarios.css";
 
 const STORAGE_KEY = "marmota-comments-preview-v1";
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim().replace(/\/+$/, "");
-const publicKey = (
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  ""
-).trim();
-const hasSharedComments = Boolean(supabaseUrl && publicKey);
-const endpoint = hasSharedComments ? `${supabaseUrl}/rest/v1/marmota_comments` : null;
+const hasSharedComments = !import.meta.env.DEV;
+const endpoint = "/api/comments";
 
 function loadPreview() {
   try {
@@ -30,23 +24,19 @@ function formatDate(dateString) {
   }).format(date);
 }
 
-async function requestComments(path = "", options = {}) {
-  const response = await fetch(`${endpoint}${path}`, {
+async function requestComments(options = {}) {
+  const response = await fetch(endpoint, {
     ...options,
     headers: {
-      apikey: publicKey,
       "Content-Type": "application/json",
       ...options.headers,
     },
   });
+  const result = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(
-      response.status === 429
-        ? "Hay demasiadas solicitudes. Intenta más tarde."
-        : "No pudimos conectar con los comentarios. Intenta de nuevo.",
-    );
+    throw new Error(result.error || "No pudimos conectar con los comentarios.");
   }
-  return response.json();
+  return result;
 }
 
 function Comentarios() {
@@ -64,12 +54,9 @@ function Comentarios() {
     const controller = new AbortController();
     setLoading(true);
 
-    requestComments(
-      "?select=id,owner_name,pet_name,message,created_at&order=created_at.desc&limit=20",
-      { signal: controller.signal },
-    )
-      .then((rows) => {
-        setComments(rows);
+    requestComments({ signal: controller.signal })
+      .then((result) => {
+        setComments(Array.isArray(result.comments) ? result.comments : []);
         setError("");
       })
       .catch((reason) => {
@@ -106,13 +93,12 @@ function Comentarios() {
     setSending(true);
     try {
       if (hasSharedComments) {
-        await requestComments("", {
+        const result = await requestComments({
           method: "POST",
-          headers: { Prefer: "return=representation" },
           body: JSON.stringify({ owner_name, pet_name, message }),
         });
+        setComments((previous) => [result.comment, ...previous].filter(Boolean).slice(0, 60));
         setNotice("Tu comentario quedó publicado. Gracias por escribirle a Marmota.");
-        setRefreshCount((value) => value + 1);
       } else {
         const preview = {
           id: `preview-${Date.now()}`,
@@ -150,7 +136,7 @@ function Comentarios() {
           <p className="comments-preview" role="status">
             <strong>Vista previa:</strong> los comentarios que escribas se guardan solo
             en este navegador. Para que todos los visitantes puedan verlos,
-            falta conectar la base de datos.
+            hace falta publicar la página en Vercel y configurar el acceso a GitHub.
           </p>
         )}
 
