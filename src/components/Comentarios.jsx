@@ -123,7 +123,7 @@ function Comentarios() {
   return (
     <section className="comments-section section" id="comentarios" aria-labelledby="comments-title">
       <div className="container">
-        <div className="comments-heading">
+        <div className="comments-heading" data-reveal="soft">
           <span className="section-label">Libro de visitas</span>
           <h2 id="comments-title">Déjale un mensaje a Marmota.</h2>
           <p>
@@ -141,7 +141,7 @@ function Comentarios() {
         )}
 
         <div className="comments-layout">
-          <form className="comments-form" onSubmit={submitComment}>
+          <form className="comments-form" data-reveal="soft" onSubmit={submitComment}>
             <h3>Escribe tu comentario</h3>
             <label htmlFor="comment-owner">Tu nombre</label>
             <input
@@ -208,7 +208,7 @@ function Comentarios() {
             </button>
           </form>
 
-          <div className="comments-wall">
+          <div className="comments-wall" data-reveal="soft" style={{ "--reveal-delay": "110ms" }}>
             <div className="comments-wall-title">
               <h3>Lo que le han escrito</h3>
               <span>{comments.length} {comments.length === 1 ? "mensaje" : "mensajes"}</span>
